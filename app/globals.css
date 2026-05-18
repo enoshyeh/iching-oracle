@@ -19,6 +19,9 @@
   --color-sage: #45a29e;
   --color-sage-dim: #2d6b68;
   --color-zen-muted: #8b8d94;
+  --color-cosmic-purple: #7c3aed;
+  --color-cosmic-violet: #a78bfa;
+  --color-cosmic-deep: #4c1d95;
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-noto-serif-sc), "Noto Serif SC", ui-serif, Georgia, serif;
@@ -74,4 +77,22 @@ body {
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+@layer components {
+  .auth-label {
+    @apply mb-1.5 block text-xs font-medium uppercase tracking-wider text-zen-muted;
+  }
+
+  .auth-input {
+    @apply w-full rounded-xl border border-white/10 bg-zen-elevated/80 px-4 py-3 text-sm text-foreground outline-none transition-all placeholder:text-zen-muted/50 focus:border-cosmic-purple/50 focus:ring-2 focus:ring-cosmic-purple/20;
+  }
+
+  .auth-btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-gradient-to-r from-amber-gold/90 via-amber-glow to-amber-gold/90 px-6 py-3 text-sm font-medium tracking-wide text-zen-bg shadow-[0_0_28px_rgba(197,160,89,0.4)] transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_40px_rgba(197,160,89,0.55)] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .auth-btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full border border-white/15 bg-zen-elevated/60 px-6 py-3 text-sm font-medium tracking-wide text-foreground transition-all duration-300 hover:border-cosmic-violet/50 hover:bg-cosmic-purple/10 hover:text-cosmic-violet disabled:cursor-not-allowed disabled:opacity-60;
+  }
 }
