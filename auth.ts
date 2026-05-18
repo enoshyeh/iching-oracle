@@ -6,25 +6,33 @@ import bcrypt from "bcryptjs";
 import type { Adapter } from "next-auth/adapters";
 import type { Provider } from "next-auth/providers";
 import { authConfig } from "@/auth.config";
+import {
+  getAuthConfigIssues,
+  getAuthSecret,
+  getGoogleOAuthConfig,
+} from "@/lib/auth-env";
 import { prisma } from "@/lib/prisma";
 import { loginSchema } from "@/lib/validations/auth";
 
-const googleClientId = process.env.AUTH_GOOGLE_ID?.trim();
-const googleClientSecret = process.env.AUTH_GOOGLE_SECRET?.trim();
+const authSecret = getAuthSecret();
+const googleOAuth = getGoogleOAuthConfig();
+
+if (process.env.NODE_ENV === "production") {
+  const issues = getAuthConfigIssues();
+  for (const issue of issues) {
+    console.error(`[auth] ${issue}`);
+  }
+}
 
 const providers: Provider[] = [];
 
-if (googleClientId && googleClientSecret) {
+if (googleOAuth.enabled) {
   providers.push(
     Google({
-      clientId: googleClientId,
-      clientSecret: googleClientSecret,
+      clientId: googleOAuth.clientId!,
+      clientSecret: googleOAuth.clientSecret!,
       allowDangerousEmailAccountLinking: true,
     }),
-  );
-} else if (process.env.NODE_ENV === "development") {
-  console.warn(
-    "[auth] Google OAuth disabled: set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET in .env",
   );
 }
 
@@ -60,13 +68,12 @@ providers.push(
   }),
 );
 
-export const isGoogleAuthEnabled = providers.some((p) => {
-  const provider = typeof p === "function" ? p() : p;
-  return provider.id === "google";
-});
+export const isGoogleAuthEnabled = googleOAuth.enabled;
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  secret: authSecret,
+  trustHost: true,
   adapter: PrismaAdapter(prisma) as Adapter,
   session: {
     strategy: "jwt",

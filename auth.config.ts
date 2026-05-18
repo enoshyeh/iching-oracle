@@ -1,10 +1,12 @@
 import type { NextAuthConfig } from "next-auth";
+import { getAuthSecret } from "@/lib/auth-env";
 
 /**
  * Edge-safe Auth.js config — used by middleware only.
  * Do not import Prisma, bcrypt, or other Node-only modules here.
  */
 export const authConfig = {
+  secret: getAuthSecret(),
   pages: {
     signIn: "/login",
   },
