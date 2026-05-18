@@ -4,17 +4,16 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import type { Adapter } from "next-auth/adapters";
+import { authConfig } from "@/auth.config";
 import { prisma } from "@/lib/prisma";
 import { loginSchema } from "@/lib/validations/auth";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(prisma) as Adapter,
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
-  },
-  pages: {
-    signIn: "/login",
   },
   providers: [
     Google({
@@ -53,6 +52,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    ...authConfig.callbacks,
     async jwt({ token, user, account }) {
       if (user) {
         token.id = user.id;
@@ -70,5 +70,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
-  trustHost: true,
 });
