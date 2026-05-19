@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
+import { HexagramDisplay } from "@/components/readings/hexagram-display";
 import { getReadingForUser } from "@/lib/data/get-reading-for-user";
+import { formatHexagramInline, getHexagram } from "@/lib/hexagrams";
 
 type PageProps = { params: Promise<{ id: string }> };
 
@@ -9,7 +11,7 @@ export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
   return {
     title: `Reading | ICHING-ORACLE`,
-    description: `Oracle reading ${id.slice(0, 8)}`,
+    description: `Oracle reading ${id.slice(0, 8)}…`,
   };
 }
 
@@ -27,7 +29,9 @@ export default async function ReadingPage({ params }: PageProps) {
     notFound();
   }
 
-  const createdAt = new Intl.DateTimeFormat("en-US", {
+  const hexagramInfo = getHexagram(reading.hexagram);
+
+  const createdAt = new Intl.DateTimeFormat("zh-Hant", {
     dateStyle: "long",
     timeStyle: "short",
   }).format(reading.createdAt);
@@ -51,6 +55,9 @@ export default async function ReadingPage({ params }: PageProps) {
           <p className="text-xs font-medium uppercase tracking-[0.3em] text-cosmic-violet">
             Your Reading
           </p>
+          <p className="mt-2 text-sm text-zen-muted">
+            {formatHexagramInline(hexagramInfo)}
+          </p>
         </header>
 
         <section className="rounded-2xl border border-white/10 bg-zen-surface/70 p-6 backdrop-blur-xl">
@@ -62,12 +69,21 @@ export default async function ReadingPage({ params }: PageProps) {
           </p>
         </section>
 
-        <section className="rounded-2xl border border-amber-gold/20 bg-zen-surface/70 p-6 backdrop-blur-xl">
+        <section className="rounded-2xl border border-amber-gold/20 bg-zen-surface/70 p-8 backdrop-blur-xl">
           <h2 className="text-xs font-medium uppercase tracking-widest text-amber-gold">
             Hexagram
           </h2>
-          <p className="mt-3 font-serif text-4xl font-light text-foreground">
-            {reading.hexagram}
+          <div className="mt-6">
+            <HexagramDisplay hexagram={hexagramInfo} variant="detail" />
+          </div>
+        </section>
+
+        <section className="rounded-2xl border border-white/10 bg-zen-surface/70 p-6 backdrop-blur-xl">
+          <h2 className="text-xs font-medium uppercase tracking-widest text-zen-muted">
+            Judgment
+          </h2>
+          <p className="mt-3 font-serif text-lg leading-relaxed text-foreground/95 italic">
+            {hexagramInfo.judgment}
           </p>
         </section>
 
@@ -75,14 +91,14 @@ export default async function ReadingPage({ params }: PageProps) {
           <h2 className="text-xs font-medium uppercase tracking-widest text-zen-muted">
             Interpretation
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-foreground/90">
+          <div className="mt-3 whitespace-pre-wrap text-base leading-relaxed text-foreground/90">
             {reading.interpretation}
-          </p>
+          </div>
         </section>
 
         <section className="rounded-2xl border border-white/10 bg-zen-surface/50 px-6 py-4 backdrop-blur-xl">
           <h2 className="text-xs font-medium uppercase tracking-widest text-zen-muted">
-            Created
+            Creation date
           </h2>
           <p className="mt-2 text-sm text-foreground">{createdAt}</p>
         </section>

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
-import { getHexagram } from "@/lib/iching/hexagrams";
+import { getHexagram } from "@/lib/hexagrams";
 import { prisma } from "@/lib/prisma";
 
 type PageProps = { params: Promise<{ id: string }> };
@@ -50,10 +50,7 @@ export default async function ReadingDetailPage({ params }: PageProps) {
             Your Reading
           </p>
           <h1 className="mt-2 font-serif text-3xl font-semibold text-foreground">
-            {hex.nameZh}
-            <span className="ml-2 text-xl font-normal text-zen-muted">
-              {hex.nameEn}
-            </span>
+            {hex.title}
           </h1>
           <p className="mt-1 text-sm text-zen-muted">{date}</p>
         </div>
@@ -62,8 +59,11 @@ export default async function ReadingDetailPage({ params }: PageProps) {
           <p className="text-xs font-medium uppercase tracking-widest text-amber-gold">
             Hexagram {reading.hexagram}
           </p>
-          <p className="mt-2 font-serif text-lg text-foreground/90">
-            {hex.summary}
+          <p className="mt-2 font-serif text-2xl text-amber-gold/90">
+            {hex.chineseName}
+          </p>
+          <p className="mt-3 font-serif text-lg italic leading-relaxed text-foreground/90">
+            {hex.judgment}
           </p>
           {reading.changing ? (
             <p className="mt-3 text-sm text-cosmic-violet">

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { HexagramDisplay } from "@/components/readings/hexagram-display";
+import { getHexagram } from "@/lib/hexagrams";
 import type { ReadingListItem } from "@/types/reading";
 
 type ReadingListProps = {
@@ -32,7 +34,8 @@ export function ReadingList({ readings }: ReadingListProps) {
 }
 
 function ReadingListItemCard({ reading }: { reading: ReadingListItem }) {
-  const date = new Intl.DateTimeFormat("en-US", {
+  const hexagramInfo = getHexagram(reading.hexagram);
+  const date = new Intl.DateTimeFormat("zh-Hant", {
     dateStyle: "medium",
     timeStyle: "short",
   }).format(reading.createdAt);
@@ -49,12 +52,11 @@ function ReadingListItemCard({ reading }: { reading: ReadingListItem }) {
           </p>
           <p className="mt-2 text-xs text-zen-muted">{date}</p>
         </div>
-        <div className="shrink-0 text-right">
-          <p className="font-serif text-2xl text-amber-gold">{reading.hexagram}</p>
-          <p className="text-[10px] uppercase tracking-widest text-zen-muted">
-            Hexagram
-          </p>
-        </div>
+        <HexagramDisplay
+          hexagram={hexagramInfo}
+          variant="compact"
+          showInline={false}
+        />
       </div>
     </Link>
   );

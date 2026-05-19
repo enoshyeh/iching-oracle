@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { getHexagram } from "@/lib/iching/hexagrams";
+import { HexagramDisplay } from "@/components/readings/hexagram-display";
+import { getHexagram } from "@/lib/hexagrams";
 
 type ReadingCardProps = {
   id: string;
   question: string;
   hexagram: number;
-  changing: string | null;
   createdAt: Date;
 };
 
@@ -13,7 +13,6 @@ export function ReadingCard({
   id,
   question,
   hexagram,
-  changing,
   createdAt,
 }: ReadingCardProps) {
   const info = getHexagram(hexagram);
@@ -34,19 +33,11 @@ export function ReadingCard({
           </p>
           <p className="mt-2 text-xs text-zen-muted">{date}</p>
         </div>
-        <div className="shrink-0 text-right">
-          <p className="font-serif text-lg text-amber-gold">
-            {info.nameZh}
-          </p>
-          <p className="text-[10px] uppercase tracking-widest text-zen-muted">
-            #{hexagram}
-          </p>
-          {changing ? (
-            <p className="mt-1 text-[10px] text-cosmic-violet">
-              變爻 {changing}
-            </p>
-          ) : null}
-        </div>
+        <HexagramDisplay
+          hexagram={info}
+          variant="compact"
+          showInline={false}
+        />
       </div>
     </Link>
   );
