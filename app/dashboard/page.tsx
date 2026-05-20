@@ -6,7 +6,9 @@ import { HistoryEmptyState } from "@/components/HistoryEmptyState";
 import { handleSignOut } from "@/lib/actions/auth";
 import { PricingCard } from "@/components/PricingCard";
 import { getDashboardData } from "@/lib/dashboard/get-dashboard-data";
+import { localeForLanguage } from "@/lib/i18n/languages";
 import { getRecentReadingHistory } from "@/lib/readings/history";
+import { getPreferredLanguageForUser } from "@/lib/user/preferred-language";
 import { formatPremiumExpiry, hasPremiumAccess } from "@/lib/premium";
 
 export const metadata = {
@@ -27,7 +29,11 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const recentHistory = await getRecentReadingHistory(session.user.id, 3);
+  const [recentHistory, preferredLanguage] = await Promise.all([
+    getRecentReadingHistory(session.user.id, 3),
+    getPreferredLanguageForUser(session.user.id),
+  ]);
+  const dateLocale = localeForLanguage(preferredLanguage);
 
   const { user } = data;
   const displayName = user.name?.trim() || "Seeker";
@@ -127,7 +133,7 @@ export default async function DashboardPage() {
             <ul className="space-y-3">
               {recentHistory.map((reading) => (
                 <li key={reading.id}>
-                  <ReadingCard reading={reading} />
+                  <ReadingCard reading={reading} locale={dateLocale} />
                 </li>
               ))}
             </ul>

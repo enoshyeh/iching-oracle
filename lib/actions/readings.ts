@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
 import { auth } from "@/auth";
 import { deleteReadingForUser } from "@/lib/readings/history";
+import { regenerateInterpretationForReading } from "@/lib/readings/regenerate-interpretation";
 import { saveReadingForUser } from "@/lib/readings/save-reading";
 import { createReadingSchema } from "@/lib/validations/reading";
 import { prisma } from "@/lib/prisma";
@@ -66,6 +67,40 @@ export type DeleteReadingResult = {
   error?: string;
   success?: boolean;
 };
+
+export type RegenerateInterpretationResult = {
+  error?: string;
+  success?: boolean;
+};
+
+export async function regenerateReadingInterpretation(
+  readingId: string,
+): Promise<RegenerateInterpretationResult> {
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return { error: "You must be signed in." };
+  }
+
+  try {
+    const result = await regenerateInterpretationForReading(
+      session.user.id,
+      readingId,
+    );
+
+    if (!result.success) {
+      return { error: result.error ?? "Regeneration failed." };
+    }
+
+    revalidatePath(`/reading/${readingId}`);
+    revalidatePath(`/history/${readingId}`);
+    revalidatePath("/history");
+    return { success: true };
+  } catch (error) {
+    console.error("[regenerateReadingInterpretation]", error);
+    return { error: "Failed to regenerate interpretation." };
+  }
+}
 
 export async function deleteReading(
   readingId: string,

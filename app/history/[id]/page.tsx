@@ -7,7 +7,7 @@ import { PremiumInterpretation } from "@/components/readings/premium-interpretat
 import { formatChangingLines, parseChangingLines } from "@/lib/iching";
 import { getReadingForHistoryDetail } from "@/lib/readings/history";
 import { formatHexagramInline, getHexagram } from "@/lib/hexagrams";
-import { formatDateTime } from "@/lib/format-date";
+import { formatDateTimeForLanguage } from "@/lib/format-date";
 import { isLegacyPlaceholderInterpretation } from "@/lib/openai";
 import { prisma } from "@/lib/prisma";
 
@@ -108,6 +108,7 @@ export default async function HistoryDetailPage({ params }: PageProps) {
             interpretation={interpretation}
             readingId={id}
             isLegacyReading={isLegacyReading}
+            interpretationPending={record.interpretationPending}
           />
         </section>
 
@@ -116,7 +117,7 @@ export default async function HistoryDetailPage({ params }: PageProps) {
             Creation date
           </h2>
           <p className="mt-2 text-sm text-foreground">
-            {formatDateTime(record.createdAt)}
+            {formatDateTimeForLanguage(record.createdAt, record.language)}
           </p>
         </section>
 

@@ -1,11 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/auth";
+import { LanguageSelector } from "@/components/language-selector";
 import { handleSignOut } from "@/lib/actions/auth";
+import { getPreferredLanguageForUser } from "@/lib/user/preferred-language";
 
 export async function Navbar() {
   const session = await auth();
   const user = session?.user;
+  const preferredLanguage =
+    user?.id != null ? await getPreferredLanguageForUser(user.id) : null;
 
   return (
     <header className="sticky top-0 z-20 border-b border-white/[0.06] bg-zen-bg/80 backdrop-blur-md">
@@ -62,6 +66,9 @@ export async function Navbar() {
                 </svg>
                 History
               </Link>
+              {preferredLanguage ? (
+                <LanguageSelector currentLanguage={preferredLanguage} />
+              ) : null}
               <div className="flex items-center gap-2 sm:gap-3">
                 {user.image ? (
                   <Image

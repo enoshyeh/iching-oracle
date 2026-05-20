@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { HistoryEmptyState } from "@/components/HistoryEmptyState";
 import { ReadingCard } from "@/components/ReadingCard";
+import { localeForLanguage } from "@/lib/i18n/languages";
 import { getReadingHistoryForUser } from "@/lib/readings/history";
+import { getPreferredLanguageForUser } from "@/lib/user/preferred-language";
 
 export const metadata = {
   title: "Reading History | ICHING-ORACLE",
@@ -36,7 +38,11 @@ export default async function HistoryPage() {
     redirect("/login?callbackUrl=/history");
   }
 
-  const readings = await getReadingHistoryForUser(session.user.id);
+  const [readings, preferredLanguage] = await Promise.all([
+    getReadingHistoryForUser(session.user.id),
+    getPreferredLanguageForUser(session.user.id),
+  ]);
+  const dateLocale = localeForLanguage(preferredLanguage);
 
   return (
     <div className="relative mx-auto w-full max-w-4xl px-6 py-12 sm:px-10 sm:py-16">
@@ -76,7 +82,7 @@ export default async function HistoryPage() {
           <ul className="space-y-4">
             {readings.map((reading) => (
               <li key={reading.id}>
-                <ReadingCard reading={reading} />
+                <ReadingCard reading={reading} locale={dateLocale} />
               </li>
             ))}
           </ul>

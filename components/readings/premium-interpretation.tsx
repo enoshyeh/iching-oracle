@@ -1,3 +1,4 @@
+import { InterpretationPendingNotice } from "@/components/readings/interpretation-pending-notice";
 import { PricingCard } from "@/components/PricingCard";
 import {
   getInterpretationPreview,
@@ -10,6 +11,7 @@ type PremiumInterpretationProps = {
   interpretation: string;
   readingId: string;
   isLegacyReading?: boolean;
+  interpretationPending?: boolean;
 };
 
 export function PremiumInterpretation({
@@ -17,19 +19,24 @@ export function PremiumInterpretation({
   interpretation,
   readingId,
   isLegacyReading = false,
+  interpretationPending = false,
 }: PremiumInterpretationProps) {
   const isPremium = hasPremiumAccess(user);
 
   if (isPremium) {
     return (
-      <div className="mt-3 whitespace-pre-wrap text-base leading-relaxed text-foreground/90">
-        {interpretation}
+      <div className="mt-3 space-y-3">
+        {interpretationPending ? <InterpretationPendingNotice /> : null}
+        <div className="whitespace-pre-wrap text-base leading-relaxed text-foreground/90">
+          {interpretation}
+        </div>
       </div>
     );
   }
 
   return (
     <div className="mt-3 space-y-6">
+      {interpretationPending ? <InterpretationPendingNotice /> : null}
       {isLegacyReading ? (
         <p className="rounded-lg border border-amber-gold/30 bg-amber-gold/10 px-3 py-2 text-sm text-amber-glow">
           This reading was saved before AI interpretation was enabled. Unlock

@@ -6,6 +6,7 @@ import { getReadingForUser } from "@/lib/data/get-reading-for-user";
 import { parseChangingLines } from "@/lib/iching";
 import { formatHexagramInline, getHexagram } from "@/lib/hexagrams";
 import { PremiumInterpretation } from "@/components/readings/premium-interpretation";
+import { formatDateTimeForLanguage } from "@/lib/format-date";
 import { isLegacyPlaceholderInterpretation } from "@/lib/openai";
 import { prisma } from "@/lib/prisma";
 
@@ -47,10 +48,10 @@ export default async function ReadingPage({ params }: PageProps) {
     reading.interpretation,
   );
 
-  const createdAt = new Intl.DateTimeFormat("zh-Hant", {
-    dateStyle: "long",
-    timeStyle: "short",
-  }).format(reading.createdAt);
+  const createdAt = formatDateTimeForLanguage(
+    reading.createdAt,
+    reading.language,
+  );
 
   return (
     <div className="relative mx-auto w-full max-w-4xl px-6 py-12 sm:px-10 sm:py-16">
@@ -111,6 +112,7 @@ export default async function ReadingPage({ params }: PageProps) {
             interpretation={reading.interpretation}
             readingId={reading.id}
             isLegacyReading={isLegacyReading}
+            interpretationPending={reading.interpretationPending}
           />
         </section>
 

@@ -21,6 +21,7 @@ model User {
   stripeCustomerId     String? @unique
   stripeSubscriptionId String?
   subscriptionStatus   String? @default("free")
+  preferredLanguage    String  @default("de")
 
   accounts Account[]
   sessions Session[]
@@ -37,8 +38,10 @@ model Reading {
   changingLines       String?
   transformedHexagram Int?
   finalHexagramName   String?
-  interpretation      String   @db.Text
-  createdAt           DateTime @default(now())
+  interpretation         String   @db.Text
+  interpretationPending  Boolean  @default(false)
+  language               String   @default("de")
+  createdAt              DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

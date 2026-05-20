@@ -7,9 +7,10 @@ import type { ReadingHistoryItem } from "@/types/reading-history";
 type ReadingCardProps = {
   reading: ReadingHistoryItem;
   href?: string;
+  locale?: string;
 };
 
-export function ReadingCard({ reading, href }: ReadingCardProps) {
+export function ReadingCard({ reading, href, locale }: ReadingCardProps) {
   const detailHref = href ?? `/history/${reading.id}`;
   const changingLabel = formatChangingLinesList(reading.changingLines);
 
@@ -51,7 +52,7 @@ export function ReadingCard({ reading, href }: ReadingCardProps) {
             dateTime={reading.createdAt.toISOString()}
             className="block text-xs text-zen-muted"
           >
-            {formatDate(reading.createdAt)}
+            {formatDate(reading.createdAt, locale)}
           </time>
         </div>
 
