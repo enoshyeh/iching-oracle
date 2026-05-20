@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
 /** Bump when the Prisma schema changes to refresh the dev singleton. */
-const PRISMA_SCHEMA_VERSION = "20260519120000_german_default_language";
+const PRISMA_SCHEMA_VERSION = "20260519140000_email_verification";
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;

@@ -18,7 +18,10 @@ export const authConfig = {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isAuthRoute =
-        nextUrl.pathname === "/login" || nextUrl.pathname === "/register";
+        nextUrl.pathname === "/login" ||
+        nextUrl.pathname === "/register" ||
+        nextUrl.pathname.startsWith("/verify-email") ||
+        nextUrl.pathname === "/account-deleted";
       const isProtected =
         nextUrl.pathname.startsWith("/dashboard") ||
         nextUrl.pathname.startsWith("/reading") ||

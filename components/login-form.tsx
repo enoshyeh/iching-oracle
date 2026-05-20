@@ -51,6 +51,12 @@ export function LoginForm() {
       });
 
       if (result?.error) {
+        if (result.code === "unverified_email") {
+          setError(
+            "Please verify your email address before signing in. Check your inbox or resend the verification link.",
+          );
+          return;
+        }
         setError("Invalid email or password");
         return;
       }
@@ -146,6 +152,16 @@ export function LoginForm() {
           </button>
         </>
       ) : null}
+
+      <p className="text-center text-sm text-zen-muted">
+        Need to verify your email?{" "}
+        <Link
+          href="/verify-email/resend"
+          className="font-medium text-amber-gold transition-colors hover:text-amber-glow"
+        >
+          Resend verification
+        </Link>
+      </p>
 
       <p className="text-center text-sm text-zen-muted">
         No account?{" "}

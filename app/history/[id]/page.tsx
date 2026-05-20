@@ -109,6 +109,7 @@ export default async function HistoryDetailPage({ params }: PageProps) {
             readingId={id}
             isLegacyReading={isLegacyReading}
             interpretationPending={record.interpretationPending}
+            isPremiumReading={record.isPremiumReading}
           />
         </section>
 

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { sendVerificationEmail } from "@/lib/email";
+import { generateVerificationToken, getVerificationTokenExpiry } from "@/lib/tokens";
 import { prisma } from "@/lib/prisma";
 import { registerSchema } from "@/lib/validations/auth";
 
@@ -14,6 +16,7 @@ export async function POST(request: Request) {
         fieldErrors.name?.[0] ??
         fieldErrors.email?.[0] ??
         fieldErrors.password?.[0] ??
+        fieldErrors.confirmPassword?.[0] ??
         "Invalid input";
       return NextResponse.json({ error: message }, { status: 400 });
     }
@@ -33,16 +36,42 @@ export async function POST(request: Request) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
+    const verificationToken = generateVerificationToken();
+    const verificationTokenExpires = getVerificationTokenExpiry();
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name: name.trim(),
         email: normalizedEmail,
         password: hashedPassword,
+        emailVerified: null,
+        verificationToken,
+        verificationTokenExpires,
       },
     });
 
-    return NextResponse.json({ success: true }, { status: 201 });
+    try {
+      await sendVerificationEmail(normalizedEmail, verificationToken);
+    } catch (emailError) {
+      console.error("[register] Verification email failed", emailError);
+      await prisma.user.delete({ where: { id: user.id } });
+      return NextResponse.json(
+        {
+          error:
+            "Could not send verification email. Please check your email address and try again.",
+        },
+        { status: 503 },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        message:
+          "Please check your email and click the verification link to activate your account.",
+      },
+      { status: 201 },
+    );
   } catch (error) {
     console.error("[register]", error);
     return NextResponse.json(

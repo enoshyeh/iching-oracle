@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { ReadingCard } from "@/components/ReadingCard";
 import { HistoryEmptyState } from "@/components/HistoryEmptyState";
 import { handleSignOut } from "@/lib/actions/auth";
+import { DeleteAccountButton } from "@/components/DeleteAccountButton";
 import { PricingCard } from "@/components/PricingCard";
 import { getDashboardData } from "@/lib/dashboard/get-dashboard-data";
 import { localeForLanguage } from "@/lib/i18n/languages";
@@ -138,6 +139,24 @@ export default async function DashboardPage() {
               ))}
             </ul>
           )}
+        </section>
+
+        <section
+          className="rounded-2xl border border-red-500/25 bg-red-950/20 p-6 backdrop-blur-xl sm:p-8"
+          aria-labelledby="danger-zone-heading"
+        >
+          <h2
+            id="danger-zone-heading"
+            className="font-serif text-xl font-semibold text-red-300"
+          >
+            Danger Zone
+          </h2>
+          <p className="mt-2 max-w-prose text-sm leading-relaxed text-zen-muted">
+            Permanently delete your account and all associated data.
+          </p>
+          <div className="mt-5">
+            <DeleteAccountButton userEmail={user.email} />
+          </div>
         </section>
 
         <Link

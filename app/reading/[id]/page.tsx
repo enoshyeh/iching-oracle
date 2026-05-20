@@ -113,6 +113,7 @@ export default async function ReadingPage({ params }: PageProps) {
             readingId={reading.id}
             isLegacyReading={isLegacyReading}
             interpretationPending={reading.interpretationPending}
+            isPremiumReading={reading.isPremiumReading}
           />
         </section>
 

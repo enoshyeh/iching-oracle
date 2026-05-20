@@ -11,6 +11,7 @@ import {
   getAuthSecret,
   getGoogleOAuthConfig,
 } from "@/lib/auth-env";
+import { UnverifiedEmailError } from "@/lib/auth-errors";
 import { prisma } from "@/lib/prisma";
 import { loginSchema } from "@/lib/validations/auth";
 
@@ -58,6 +59,10 @@ providers.push(
       );
       if (!isValid) return null;
 
+      if (!user.emailVerified) {
+        throw new UnverifiedEmailError();
+      }
+
       return {
         id: user.id,
         email: user.email,
@@ -80,6 +85,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     maxAge: 30 * 24 * 60 * 60,
   },
   providers,
+  events: {
+    async signIn({ user, account }) {
+      if (account?.provider === "google" && user.id) {
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { emailVerified: new Date() },
+        });
+      }
+    },
+  },
   callbacks: {
     ...authConfig.callbacks,
     async jwt({ token, user, account }) {

@@ -12,8 +12,10 @@ model User {
   name          String?
   email         String    @unique
   password      String?
-  emailVerified DateTime?
-  image         String?
+  emailVerified            DateTime?
+  verificationToken        String?   @unique
+  verificationTokenExpires DateTime?
+  image                    String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
@@ -40,6 +42,7 @@ model Reading {
   finalHexagramName   String?
   interpretation         String   @db.Text
   interpretationPending  Boolean  @default(false)
+  isPremiumReading       Boolean  @default(false)
   language               String   @default("de")
   createdAt              DateTime @default(now())
 
